@@ -22,6 +22,9 @@ PORT_XHTTP=80
 PORT_REALITY=443
 DOMAIN_SNI=""
 
+# 生成客户端配置连接时，服务器地址填写的默认优选CDN域名
+YOUXUAN_DOMAIN="www.visa.com.hk"
+
 # ================= Fixed Identity Defaults =================
 # 仅在 -m fixed 且 identity.json 不存在时使用
 # random 模式永远不会使用这些值
@@ -280,9 +283,16 @@ EOJ
   EXTRA_ENCODED=$(echo "$EXTRA_JSON" | jq -sRr @uri)
   PATH_ENCODED=$(printf '%s' "$XHTTP_PATH" | jq -sRr @uri)
 
-  VLESS_LINK="vless://${UUID_XHTTP}@${CF_DOMAIN}:443?encryption=none&security=tls&sni=${CF_DOMAIN}&type=xhttp&host=${CF_DOMAIN}&path=${PATH_ENCODED}&mode=auto&extra=${EXTRA_ENCODED}#xhttp-reality"
-  log ""
-  log "=======拷贝以下link至客户端使用========"
+  VLESS_LINK="vless://${UUID_XHTTP}@${YOUXUAN_DOMAIN}:443?encryption=none&security=tls&sni=${CF_DOMAIN}&type=xhttp&host=${CF_DOMAIN}&path=${PATH_ENCODED}&mode=auto&extra=${EXTRA_ENCODED}#xhttp-reality"
+  echo ""
+  echo "============================= 安装完成 ========================================"
+  echo ""
+  echo "📎 v2rayN / sing-box 分享链接："
+  echo "！！！服务器地址默认使用www.visa.com.hk，可自行修改为其他套CF的域名或优选IP！！！"
+  echo ""
+  echo "$VLESS_LINK"
+  echo ""
+  log "================================================================================"
   echo "$VLESS_LINK" | tee "$XRAY_DIR/client-link.txt"
   log "====================================="
 }
