@@ -66,7 +66,7 @@ done
 
 # ================= 依赖 =================
 install_deps() {
-  apt update
+  apt -o Acquire::http::Timeout=5 update
   apt install -y curl unzip jq uuid-runtime openssl
 }
 
