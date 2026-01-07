@@ -68,8 +68,13 @@ graph TD
 ### 📥 安装（推荐：随机身份）
 ```bash
 ./xhttp-reality.sh -i -d your.domain
+```
+
+**示例**: 
 ```bash
-示例: ./xhttp-reality.sh -i -d xh.example.com
+./xhttp-reality.sh -i -d xh.example.com
+```
+
 **安装完成后会：**
 1. 安装 Xray
 2. 随机生成身份并落盘 (`/usr/local/etc/xray/identity.json`)
@@ -82,8 +87,8 @@ graph TD
 ```
 
 # 🧭 CLI 参数说明
-参数,说明
-"-i, --install",安装并部署
+**参数,说明**
+*"-i, --install",安装并部署*
 "-u, --uninstall",卸载并清理
 "-s, --status",查看运行状态
 "-d, --domain",Cloudflare 域名（必填）
@@ -104,7 +109,6 @@ xhttp 套 CDN 时: 必须监听 80 端口 (或通过 443 fallback)。
 #📱 客户端使用
 安装完成后，脚本会自动生成客户端配置文件：
 
-Plaintext
 ```bash
 /usr/local/etc/xray/client-link.txt
 ```
@@ -116,18 +120,15 @@ sing-box
 
 Clash Meta (新版本)
 
-#📊 查看状态 / 卸载
-Bash
+# 📊 查看状态 / 卸载
 
-# 查看状态
+### 查看状态
 ```bash
 ./xhttp-reality.sh -s
 ```
 
 
-# 卸载 (停止服务、删除配置及 identity.json)
+### 卸载 (停止服务、删除配置及 identity.json)
 ```bash
 ./xhttp-reality.sh -u
-
-
 ```
