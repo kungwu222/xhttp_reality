@@ -3,7 +3,7 @@ set -e
 
 # ================= 元信息 =================
 SCRIPT_NAME="xhttp-reality"
-SCRIPT_VERSION="1.0.0"
+SCRIPT_VERSION="1.0.1"
 
 # ================= 路径 =================
 XRAY_BIN="/usr/local/bin/xray"
