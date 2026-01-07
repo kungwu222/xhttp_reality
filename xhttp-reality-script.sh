@@ -143,7 +143,7 @@ load_fixed_identity() {
   "xhttp_path": "$XHTTP_PATH",
   "private_key": "$PRIVATE_KEY",
   "public_key": "$PUBLIC_KEY",
-  "short_id": "$SHORT_ID"
+  "short_id": "$SHORT_ID",
   "domain_sni": "$DOMAIN_SNI"
 }
 EOF
@@ -193,7 +193,7 @@ load_or_generate_random_identity() {
   "xhttp_path": "$XHTTP_PATH",
   "private_key": "$PRIVATE_KEY",
   "public_key": "$PUBLIC_KEY",
-  "short_id": "$SHORT_ID"
+  "short_id": "$SHORT_ID",
   "domain_sni": "$DOMAIN_SNI"
 }
 EOF
