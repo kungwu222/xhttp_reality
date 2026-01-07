@@ -91,6 +91,7 @@ curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality/refs/heads/
 2. 随机生成身份并落盘 (`/usr/local/etc/xray/identity.json`)
 3. 写入配置并启动服务
 4. **自动输出客户端可用的分享链接 (VLESS)**
+5. **创建快捷方式命令，可用 sr 再次运行脚本**
 
 ### 🛠 安装（高级：固定身份）
 ```bash
@@ -106,7 +107,9 @@ curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality/refs/heads/
 | `-u`, `--uninstall` | 卸载并清理                    |
 | `-s`, `--status`    | 查看运行状态                   |
 | `-d`, `--domain`    | Cloudflare 域名（必填）        |
+| `-l`, `--link`    | 可用快捷命令 `sr -l` 显示节点配置       |
 | `-m`, `--mode`      | 身份模式：`random` / `fixed`  |
+| `-n`, `--nodename`  | 可自定义节点名称，默认 xhttp-reality  |
 | `--uuid-xhttp`      | fixed 模式下指定 xhttp UUID   |
 | `--uuid-reality`    | fixed 模式下指定 reality UUID |
 | `--domain-sni`      | reality 域名sni（默认 www.icloud.com）        |
@@ -132,17 +135,18 @@ v2rayN
 
 sing-box
 
-Clash Meta (新版本)
 
 # 📊 查看状态 / 卸载
 
 ### 查看状态
 ```bash
-./xhttp-reality.sh -s
+sr -s
 ```
-
-
+### 查看节点配置
+```bash
+sr -l
+```
 ### 卸载 (停止服务、删除配置及 identity.json)
 ```bash
-./xhttp-reality.sh -u
+sr -u
 ```
