@@ -1,142 +1,133 @@
-🛠️ XHTTP + Reality + Cloudflare 一键部署脚本
+# 🛠️ XHTTP + Reality + Cloudflare Script
 
-一个 工程化的一键部署脚本，用于在 VPS 上部署 Xray（VLESS + xhttp + Reality），支持：
+![Shell](https://img.shields.io/badge/Language-Bash-green)
+![Xray](https://img.shields.io/badge/Core-Xray-blue)
+![License](https://img.shields.io/badge/License-MIT-orange)
 
-🔼 上行使用 xhttp + Cloudflare CDN
+> **声明**: 本项目仅用于技术研究和合法用途，请遵守当地法律法规，勿用于非法用途；请勿用于生产环境。
 
-🔽 下行使用 Reality 直连
+> **注意**: 在使用此项目和教程过程中，若因违反以上声明使用规则而产生的一切后果由使用者自负。
 
-🧰 CLI 参数体系完善
+**如果觉得项目有用，请点个 ⭐️ Star 支持一下！**
 
-🧠 支持 固定 / 随机身份模式
+---
 
-🗃️ 身份落盘、可复现、可卸载
+# 📖 项目简介
+****XHTTP + Reality + Cloudflare Script**** 是一个工程化的一键部署脚本，专为在 VPS 上部署 Xray (VLESS + xhttp + Reality) 而设计。
 
-📎 自动生成客户端可用的分享链接与订阅
+它不仅仅是一个安装脚本，更是一套完整的身份生命周期管理工具。支持 **上行 xhttp + Cloudflare CDN** 隐藏流量特征，**下行 Reality 直连** 保证低延迟与高性能。
 
-🌐 架构概览
-客户端
- ├── 上行：xhttp → Cloudflare CDN → VPS:80
- └── 下行：reality 直连 → VPS:443
+无论你是追求极致隐匿的极客，还是需要稳定节点的管理员，本脚本都能通过完善的 CLI 参数体系与 **Identity as State** 的设计理念，为您提供可复现、可审计的一站式体验。
 
-📋 系统要求
+---
 
-系统：Debian 10+ / Ubuntu 20.04+
+# ✨ 核心架构: 上下行分流 (Traffic Splitting)
 
-架构：amd64 / arm64
+本架构采用了 **上行 CDN 隐匿** 与 **下行 Reality 直连** 相结合的机制，实现了高隐蔽性与低延迟的完美平衡。
 
-权限：需要 root
+```mermaid
+graph TD
+    User[客户端 / 用户] -->|访问| Mode[分流模式]
 
-环境：systemd
+    subgraph "Upstream: 上行隐匿 (Security)"
+      Mode -->|xhttp| CF[Cloudflare CDN]
+      CF -->|回源 port 80| VPS_80[VPS:80]
+      NoteA[上行: 隐藏真实 IP, 抗封锁]
+    end
 
-🚀 快速开始
-安装（随机身份，推荐）
+    subgraph "Downstream: 下行直连 (Speed)"
+       VPS_443[VPS:443] -.->|Reality| User
+       NoteB[下行: 偷取 TLS, 低延迟]
+    end
+    
+    style User fill:#f9f,stroke:#333,stroke-width:2px
+    style Mode fill:#bbf,stroke:#333,stroke-width:1px
+```
+### 🎲 模式 A：随机身份 (Random Mode)
+
+原理：若本地不存在 `identity.json`，脚本将自动随机生成 UUID 和 Key 并落盘保存。
+
+***优势: 适合快速部署，开箱即用，全自动管理身份生命周期。***
+
+### 🔒 模式 B：固定身份 (Fixed Mode)
+
+原理：通过 CLI 参数指定 UUID，或者复用已存在的 `identity.json` 文件。
+
+***优势: 适合多节点统一管理、迁移恢复，保证配置的“可复现”与“可审计”。***
+
+---
+
+# 🚀 快速开始
+
+### ✅ 系统要求
+* **系统**: Debian 10+ / Ubuntu 20.04+
+* **架构**: amd64 / arm64
+* **权限**: 需要 root
+* **环境**: systemd
+
+### 📥 安装（推荐：随机身份）
+```bash
 ./xhttp-reality.sh -i -d your.domain
+```bash
+示例: ./xhttp-reality.sh -i -d xh.example.com
+**安装完成后会：**
+1. 安装 Xray
+2. 随机生成身份并落盘 (`/usr/local/etc/xray/identity.json`)
+3. 写入配置并启动服务
+4. **自动输出客户端可用的分享链接 (VLESS)**
 
-
-示例：
-
-./xhttp-reality.sh -i -d xh.example.com
-
-
-安装完成后会：
-
-✔ 安装 Xray
-✔ 随机生成身份并落盘
-✔ 写入配置并启动服务
-✔ 输出客户端分享链接
-
-安装（固定身份模式）
+### 🛠 安装（高级：固定身份）
+```bash
 ./xhttp-reality.sh -i -d your.domain -m fixed
+```
 
-🧭 CLI 参数说明
-参数	说明
--i, --install	安装并部署
--u, --uninstall	卸载并清理
--s, --status	查看运行状态
--d, --domain	Cloudflare 域名（必填）
--m, --mode	身份模式：random / fixed
---uuid-xhttp	fixed 模式下指定 xhttp UUID
---uuid-reality	fixed 模式下指定 reality UUID
---xhttp-port	xhttp 监听端口（默认 80）
---reality-port	reality 监听端口（默认 443）
-version	输出脚本版本
-👤 身份管理（Identity Lifecycle）
+# 🧭 CLI 参数说明
+参数,说明
+"-i, --install",安装并部署
+"-u, --uninstall",卸载并清理
+"-s, --status",查看运行状态
+"-d, --domain",Cloudflare 域名（必填）
+"-m, --mode",身份模式：random / fixed
+--uuid-xhttp,fixed 模式下指定 xhttp UUID
+--uuid-reality,fixed 模式下指定 reality UUID
+--xhttp-port,xhttp 监听端口（默认 80）
+--reality-port,reality 监听端口（默认 443）
+version,输出脚本版本
 
-脚本使用落盘文件作为唯一真实身份状态：
+# ☁️ Cloudflare 注意事项
+***端口限制: Cloudflare 橙云代理 (CDN) 只支持回源到特定端口。***
 
-/usr/local/etc/xray/identity.json
+xhttp 套 CDN 时: 必须监听 80 端口 (或通过 443 fallback)。
 
-🎲 random（默认）
+警告: 8880 等非标准端口不能直接用于 Cloudflare 回源。
 
-若不存在 identity.json → 随机生成
+#📱 客户端使用
+安装完成后，脚本会自动生成客户端配置文件：
 
-若存在 → 复用
-
-忽略命令行身份参数
-
-🔒 fixed
-
-若存在 identity.json → 复用
-
-若不存在 → 使用默认 / 命令参数初始化
-
-不生成随机值
-
-参数不完整或缺失则失败
-
-☁️ Cloudflare 注意事项
-
-Cloudflare 橙云代理 只支持回源到 80 / 443 端口
-
-xhttp 套 CDN 时需要监听 port 80
-
-或通过 443 fallback
-
-8880 等端口不能直接用于回源
-
-📱 客户端使用
-
-安装完成后会生成：
-
+Plaintext
+```bash
 /usr/local/etc/xray/client-link.txt
-
-
-包含可直接导入的 vless:// 分享链接，可用于：
+```
+包含可直接导入的 vless:// 分享链接，完美支持：
 
 v2rayN
 
 sing-box
 
-Clash Meta（新版本）
+Clash Meta (新版本)
 
-📊 查看状态
+#📊 查看状态 / 卸载
+Bash
+
+# 查看状态
+```bash
 ./xhttp-reality.sh -s
+```
 
 
-输出：
-
-✔ Xray 服务状态
-✔ xhttp / reality 端口监听情况
-
-🧹 卸载
+# 卸载 (停止服务、删除配置及 identity.json)
+```bash
 ./xhttp-reality.sh -u
 
 
-会：
-
-✔ 停止 Xray
-✔ 删除服务单元
-✔ 删除配置和 identity.json
-
-📦 设计理念
-
-Identity as State
-
-模式边界明确
-
-可复现、可审计、可维护
-
-⚠️ 免责声明
-
-本项目仅用于技术研究和合法用途，请遵守当地法律法规。
+```
