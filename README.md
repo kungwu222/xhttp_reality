@@ -1,4 +1,4 @@
-# 🛠️ XHTTP + Reality + Cloudflare Script
+# 🛠️ XHTTP + Reality Script
 
 ![Shell](https://img.shields.io/badge/Language-Bash-green)
 ![Xray](https://img.shields.io/badge/Core-Xray-blue)
@@ -13,11 +13,11 @@
 ---
 
 # 📖 项目简介
-****XHTTP + Reality + Cloudflare Script**** 是一个工程化的一键部署脚本，专为在 VPS 上部署 Xray (VLESS + xhttp + Reality) 而设计。
+****XHTTP + Reality Script**** 是一个Xray一键部署脚本，专为在 VPS 上部署 Xray (VLESS + xhttp + Reality) 而设计。
 
-它不仅仅是一个安装脚本，更是一套完整的身份生命周期管理工具。支持 **上行 xhttp + Cloudflare CDN** 隐藏流量特征，**下行 Reality 直连** 保证低延迟与高性能。
+安装脚本支持 **上行 xhttp + Cloudflare CDN** 隐藏流量特征，**下行 Reality 直连** 保证低延迟与高性能。
 
-无论你是追求极致隐匿的极客，还是需要稳定节点的管理员，本脚本都能通过完善的 CLI 参数体系与 **Identity as State** 的设计理念，为您提供可复现、可审计的一站式体验。
+另外，本脚本都能通过完善的 CLI 参数体系与 **Identity as State** 的设计理念，为您提供可复现、可审计的一站式体验。
 
 ---
 
@@ -66,13 +66,22 @@ graph TD
 * **环境**: systemd
 
 ### 📥 安装（推荐：随机身份）
+
+**推荐（安全方式）**：
+
 ```bash
-./xhttp-reality.sh -i -d your.domain
+curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality_script/refs/heads/main/xhttp-reality-script.sh \
+-o xhttp-reality-script.sh
+chmod +x xhttp-reality-script.sh
+./xhttp-reality-script.sh -i -d your.domain
+
 ```
 
-**示例**: 
+**一行命令（快速）**: 
 ```bash
-./xhttp-reality.sh -i -d xh.example.com
+curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality_script/refs/heads/main/xhttp-reality-script.sh \
+| bash -s -- -i -d your.domain
+
 ```
 
 **安装完成后会：**
@@ -83,7 +92,7 @@ graph TD
 
 ### 🛠 安装（高级：固定身份）
 ```bash
-./xhttp-reality.sh -i -d your.domain -m fixed
+./xhttp-reality-script.sh -i -d your.domain -m fixed
 ```
 **说明：**
 使用代码内默认的固定身份配置和通过CLI参数传入的配置参数生成XRAY身份配置。 
@@ -127,11 +136,11 @@ Clash Meta (新版本)
 
 ### 查看状态
 ```bash
-./xhttp-reality.sh -s
+./xhttp-reality-script.sh -s
 ```
 
 
 ### 卸载 (停止服务、删除配置及 identity.json)
 ```bash
-./xhttp-reality.sh -u
+./xhttp-reality-script.sh -u
 ```
