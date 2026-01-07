@@ -70,7 +70,7 @@ graph TD
 **推荐（安全方式）**：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality_script/refs/heads/main/xhttp-reality.sh \
+curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality/refs/heads/main/xhttp-reality.sh \
 -o xhttp-reality.sh
 chmod +x xhttp-reality.sh
 ./xhttp-reality.sh -i -d your.domain
@@ -79,7 +79,7 @@ chmod +x xhttp-reality.sh
 
 **一行命令（快速）**: 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality_script/refs/heads/main/xhttp-reality.sh \
+curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality/refs/heads/main/xhttp-reality.sh \
 | bash -s -- -i -d your.domain
 
 ```
