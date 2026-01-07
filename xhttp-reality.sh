@@ -2,7 +2,7 @@
 set -e
 
 # ================= 元信息 =================
-SCRIPT_NAME="xhttp-reality-script"
+SCRIPT_NAME="xhttp-reality"
 SCRIPT_VERSION="1.0.0"
 
 # ================= 路径 =================
