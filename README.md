@@ -98,17 +98,16 @@ graph TD
 | `-m`, `--mode`      | 身份模式：`random` / `fixed`  |
 | `--uuid-xhttp`      | fixed 模式下指定 xhttp UUID   |
 | `--uuid-reality`    | fixed 模式下指定 reality UUID |
-| `--xhttp-port`      | xhttp 监听端口（默认 80）        |
-| `--reality-port`    | reality 监听端口（默认 443）     |
+| `--domain-sni`      | reality 域名sni（默认 www.icloud.com）        |
 | `version`           | 输出脚本版本                   |
 
 
 # ☁️ Cloudflare 注意事项
 ***端口限制: Cloudflare 橙云代理 (CDN) 只支持回源到特定端口。***
 
-xhttp 套 CDN 时: 必须监听 80 端口 (或通过 443 fallback)。
+xhttp 套 CDN 时: 必须监听 80 端口 (或通过 443 fallback)，
+否则自行到cloudflare设置fallback端口。
 
-警告: 8880 等非标准端口不能直接用于 Cloudflare 回源。
 
 # 📱 客户端使用
 安装完成后，脚本会自动生成客户端配置文件：
