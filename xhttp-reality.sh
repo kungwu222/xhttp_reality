@@ -67,6 +67,21 @@ check_port() {
   fi
 }
 
+wait_for_port() {
+  local port=$1
+  local retries=${2:-20}   # 20 * 0.5s = 10s
+
+  for ((i=0; i<retries; i++)); do
+    if ss -lnt | grep -q ":$port "; then
+      log "✔ 端口 $port 已就绪"
+      return 0
+    fi
+    sleep 0.5
+  done
+
+  log "✘ 等待端口 $port 超时"
+  return 1
+}
 
 # ================= 参数解析 =================
 while [[ $# -gt 0 ]]; do
@@ -297,9 +312,10 @@ EOF
 
   # ===== 安装完成后状态检查 =====
   check_xray_status
-  check_port "$PORT_XHTTP"
-  check_port "$PORT_REALITY"
+  wait_for_port "$PORT_XHTTP" 20
+  wait_for_port "$PORT_REALITY" 20
 
+  log "✔ Xray 已完全就绪"
 
   # ===== 分享链接 =====
   EXTRA_JSON=$(cat <<EOJ
