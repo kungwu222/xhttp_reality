@@ -281,8 +281,10 @@ EOJ
   PATH_ENCODED=$(printf '%s' "$XHTTP_PATH" | jq -sRr @uri)
 
   VLESS_LINK="vless://${UUID_XHTTP}@${CF_DOMAIN}:443?encryption=none&security=tls&sni=${CF_DOMAIN}&type=xhttp&host=${CF_DOMAIN}&path=${PATH_ENCODED}&mode=auto&extra=${EXTRA_ENCODED}#xhttp-reality"
-
+  log ""
+  log "=======拷贝以下link至客户端使用========"
   echo "$VLESS_LINK" | tee "$XRAY_DIR/client-link.txt"
+  log "====================================="
 }
 
 # ================= 卸载 =================
