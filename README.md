@@ -70,16 +70,16 @@ graph TD
 **推荐（安全方式）**：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality_script/refs/heads/main/xhttp-reality-script.sh \
--o xhttp-reality-script.sh
-chmod +x xhttp-reality-script.sh
-./xhttp-reality-script.sh -i -d your.domain
+curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality_script/refs/heads/main/xhttp-reality.sh \
+-o xhttp-reality.sh
+chmod +x xhttp-reality.sh
+./xhttp-reality.sh -i -d your.domain
 
 ```
 
 **一行命令（快速）**: 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality_script/refs/heads/main/xhttp-reality-script.sh \
+curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality_script/refs/heads/main/xhttp-reality.sh \
 | bash -s -- -i -d your.domain
 
 ```
@@ -92,7 +92,7 @@ curl -fsSL https://raw.githubusercontent.com/kungwu222/xhttp_reality_script/refs
 
 ### 🛠 安装（高级：固定身份）
 ```bash
-./xhttp-reality-script.sh -i -d your.domain -m fixed
+./xhttp-reality.sh -i -d your.domain -m fixed
 ```
 **说明：**
 使用代码内默认的固定身份配置和通过CLI参数传入的配置参数生成XRAY身份配置。 
@@ -136,11 +136,11 @@ Clash Meta (新版本)
 
 ### 查看状态
 ```bash
-./xhttp-reality-script.sh -s
+./xhttp-reality.sh -s
 ```
 
 
 ### 卸载 (停止服务、删除配置及 identity.json)
 ```bash
-./xhttp-reality-script.sh -u
+./xhttp-reality.sh -u
 ```
