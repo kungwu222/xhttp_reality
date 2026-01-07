@@ -11,6 +11,8 @@
 **如果觉得项目有用，请点个 ⭐️ Star 支持一下！**
 
 ---
+# 必要前提： 你的vps需要事先在Cloudflare做好域名解析！！！ 否则不用继续了。
+---
 
 # 📖 项目简介
 ****XHTTP + Reality Script**** 是一个Xray一键部署脚本，专为在 VPS 上部署 Xray (VLESS + xhttp + Reality) 而设计。
