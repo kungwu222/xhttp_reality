@@ -23,6 +23,8 @@ PORT_REALITY=443
 DOMAIN_SNI=""
 # 生成客户端配置连接时，服务器地址填写的默认优选CDN域名
 YOUXUAN_DOMAIN="www.visa.com.hk"
+# 生成客户端配置连接时，服务器地址填写的默认优选CDN域名
+NODE_NAME="xhttp-reality"
 
 # ================= Fixed Identity Defaults =================
 # 仅在 -m fixed 且 identity.json 不存在时使用
@@ -35,6 +37,7 @@ DEFAULT_PRIVATE_KEY="8O9iwbAbCAFg4fMWgTTaTpyFsboKSFD__VGFEb8RiHU"
 DEFAULT_PUBLIC_KEY="bKtUFakQNVC3onraxo0Z3_nu6DRuCB70_9djSpRJkyM"
 DEFAULT_SHORT_ID="adba013e"
 DEFAULT_DOMAIN_SNI="www.icloud.com"
+DEFAULT_PORT_XHTTP=80
 
 
 
@@ -83,16 +86,21 @@ wait_for_port() {
   return 1
 }
 
+
 # ================= 参数解析 =================
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -i|--install) ACTION="install"; shift ;;
     -u|--uninstall) ACTION="uninstall"; shift ;;
     -s|--status) ACTION="status"; shift ;;
+    -l|--link) ACTION="link"; shift ;;
     -d|--domain) CF_DOMAIN="$2"; shift 2 ;;
     -m|--mode) MODE="$2"; shift 2 ;;
+    -n|--nodename) NODE_NAME="$2"; shift 2 ;;
     --uuid-xhttp) UUID_XHTTP="$2"; shift 2 ;;
     --uuid-reality) UUID_REALITY="$2"; shift 2 ;;
+    --port-xhttp) PORT_XHTTP="$2"; shift 2 ;;
+    --port-reality) PORT_REALITY="$2"; shift 2 ;;
     --domain-sni) DOMAIN_SNI="$2"; shift 2 ;;
     version) echo "$SCRIPT_NAME $SCRIPT_VERSION"; exit 0 ;;
     *) echo "未知参数: $1"; exit 1 ;;
@@ -165,6 +173,7 @@ load_fixed_identity() {
   PUBLIC_KEY=${PUBLIC_KEY:-"$DEFAULT_PUBLIC_KEY"}
   SHORT_ID=${SHORT_ID:-"$DEFAULT_SHORT_ID"}
   DOMAIN_SNI=${DOMAIN_SNI:-"$DEFAULT_DOMAIN_SNI"}
+  PORT_XHTTP=${PORT_XHTTP:-"$DEFAULT_PORT_XHTTP"}
 
   if ! validate_identity; then
     log "错误：fixed 模式下身份参数缺失或非法"
@@ -242,8 +251,10 @@ install_xray() {
   require_root
   [[ -n "$CF_DOMAIN" ]] || { log "缺少 -d <domain>"; exit 1; }
 
-  install_deps
-  ARCH=$(detect_arch)
+  install_deps || { log_error "Dependency installation failed!"; exit 1; }
+  
+  ARCH=$(detect_arch) || { log_error "Failed to detect architecture."; exit 1; }
+  log "Architecture detected: $ARCH"
 
   log "安装 Xray ($ARCH)"
   curl -fsSL https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-${ARCH}.zip -o /tmp/xray.zip
@@ -292,6 +303,16 @@ install_xray() {
 }
 EOF
 
+# 1. 将脚本复制到 /usr/local/bin 目录，创建快捷命令 sr
+  cp "$0" /usr/local/bin/sr
+
+  # 2. 确保脚本可执行
+  chmod +x /usr/local/bin/sr
+
+  # 3. 创建快捷命令之后，为 sr 提供一个配置链接选项
+  log "✔ 创建了快捷命令 sr，您现在可以使用 'sr' 来执行脚本。"
+
+
   cat > "$SERVICE_FILE" <<EOF
 [Unit]
 Description=Xray Service
@@ -311,27 +332,33 @@ EOF
   systemctl restart xray
 
   # ===== 安装完成后状态检查 =====
+
   check_xray_status
   wait_for_port "$PORT_XHTTP" 20
   wait_for_port "$PORT_REALITY" 20
 
   log "✔ Xray 已完全就绪"
 
+
   # ===== 分享链接 =====
   EXTRA_JSON=$(cat <<EOJ
 {"downloadSettings":{"address":"$VPS_IP","port":443,"network":"xhttp","xhttpSettings":{"path":"$XHTTP_PATH","mode":"auto"},"security":"reality","realitySettings":{"serverName":"$DOMAIN_SNI","fingerprint":"chrome","show":false,"publicKey":"$PUBLIC_KEY","shortId":"$SHORT_ID","spiderX":"/","mldsa65Verify":""}}}
 EOJ
 )
+  # 对 extra 字段进行URL编码
   EXTRA_ENCODED=$(echo "$EXTRA_JSON" | jq -sRr @uri)
+  # 对 path 字段进行URL编码
   PATH_ENCODED=$(printf '%s' "$XHTTP_PATH" | jq -sRr @uri)
+  # 对节点名称字段进行URL编码
+  NAME_ENCODED=$(printf '%s' "$NODE_NAME" | jq -sRr @uri)
 
-  VLESS_LINK="vless://${UUID_XHTTP}@${YOUXUAN_DOMAIN}:443?encryption=none&security=tls&sni=${CF_DOMAIN}&type=xhttp&host=${CF_DOMAIN}&path=${PATH_ENCODED}&mode=auto&extra=${EXTRA_ENCODED}#xhttp-reality"
-  
+  VLESS_LINK="vless://${UUID_XHTTP}@${YOUXUAN_DOMAIN}:443?encryption=none&security=tls&sni=${CF_DOMAIN}&type=xhttp&host=${CF_DOMAIN}&path=${PATH_ENCODED}&mode=auto&extra=${EXTRA_ENCODED}#${NAME_ENCODED}"
+
   SUB_BASE64=$(printf '%s' "$VLESS_LINK" | base64 -w 0)
 
   echo ""
   echo "✔ 客户端配置已生成"
-  echo "══════════════════════════════════════"
+  echo "════════════════════════════════════════════════════════════════════"
   echo ""
   echo "【方式一：单节点分享链接（整行复制）】"
   echo "──────────────────────────────────────"
@@ -348,27 +375,82 @@ EOJ
   echo "- 服务器地址默认使用www.visa.com.hk，可自行修改为其他套CF的域名或优选IP！"
   echo ""
   echo ""
-  echo "════════════════安装完成════════════════"
+  echo "════════════════安装完成，可使用 'sr' 来执行脚本。════════════════════"
   echo ""
 }
 
 # ================= 卸载 =================
 uninstall_xray() {
   require_root
-  log "卸载 Xray"
+  log "开始卸载 Xray 服务..."
   systemctl stop xray 2>/dev/null || true
   systemctl disable xray 2>/dev/null || true
+  log "✔ 已禁用 Xray 服务"
   rm -f "$SERVICE_FILE"
+  # 删除快捷命令（sr）
+  rm -f /usr/local/bin/sr
+  log "✔ 已删除快捷命令 sr"
   systemctl daemon-reload
   rm -rf "$XRAY_DIR" "$XRAY_BIN"
+  log "✔ 已删除 Xray 服务文件和配置目录"
+  log "✔ 卸载完成"
 }
+
+# ================= 检查是否安装过脚本 =================
+check_if_installed() {
+  # 检查 identity.json 配置文件是否存在
+  if [[ ! -f "$IDENTITY_FILE" ]]; then
+    log "✘ 配置文件 ($IDENTITY_FILE) 未找到。"
+    echo "请先运行脚本带上 --install 参数进行安装。"
+    exit 1
+  fi
+
+  # 如果 identity.json 存在，表示脚本已安装
+  log "✔ 脚本已安装，继续查看状态。"
+}
+
+# ================= 生成链接 =================
+generate_link() {
+# 检查 client-link.txt 文件是否存在
+  if [[ ! -f "$XRAY_DIR/client-link.txt" ]]; then
+    log "✘ 未找到生成的 VLESS 链接文件 ($XRAY_DIR/client-link.txt)。"
+    echo "请先执行安装操作。"
+    exit 1
+  fi
+
+  # 从文件中读取 VLESS 链接
+  VLESS_LINK=$(cat "$XRAY_DIR/client-link.txt")
+  # 对 VLESS 链接进行 Base64 编码
+  SUB_BASE64=$(printf '%s' "$VLESS_LINK" | base64 -w 0)
+  # 输出生成的 VLESS 链接
+  echo ""
+  echo "═════════════客户端配置════════════════"
+  echo ""
+  echo "【方式一：单节点分享链接（整行复制）】"
+  echo "──────────────────────────────────────"
+  echo "$VLESS_LINK"
+  echo "──────────────────────────────────────"
+  echo ""
+  echo "【方式二：Base64 订阅（推荐）】"
+  echo "──────────────────────────────────────"
+  echo "$SUB_BASE64"
+  echo "──────────────────────────────────────"
+  echo ""
+  echo "【提示】"
+  echo "- v2rayN / sing-box：使用 Base64 订阅"
+  echo "- 服务器地址默认使用www.visa.com.hk，可自行修改为其他套CF的域名或优选IP！"
+  echo ""
+  echo "══════════════════════════════════════"
+  echo ""
+}
+
 
 # ================= 状态 =================
 status_xray() {
   # systemctl status xray --no-pager || true
   # ss -lnt | grep -E ":$PORT_XHTTP |:$PORT_REALITY " || true
   check_xray_status
-  check_port "$PORT_XHTTP"
+  # check_port "$PORT_XHTTP"
   check_port "$PORT_REALITY"
 }
 
@@ -376,6 +458,13 @@ status_xray() {
 case "$ACTION" in
   install) install_xray ;;
   uninstall) uninstall_xray ;;
-  status) status_xray ;;
+  link) 
+    # 在生成链接之前，先检查是否已安装
+    check_if_installed
+    generate_link ;;
+  status) 
+    # 在查看状态之前，先检查是否已安装
+    check_if_installed
+    status_xray ;;
   *) echo "用法: -i|-u|-s -d <domain> [-m fixed|random]"; exit 1 ;;
 esac
