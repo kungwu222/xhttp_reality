@@ -89,17 +89,19 @@ graph TD
 使用代码内默认的固定身份配置和通过CLI参数传入的配置参数生成XRAY身份配置。 
 
 # 🧭 CLI 参数说明
-**参数,说明**
-*"-i, --install",安装并部署*
-"-u, --uninstall",卸载并清理
-"-s, --status",查看运行状态
-"-d, --domain",Cloudflare 域名（必填）
-"-m, --mode",身份模式：random / fixed
---uuid-xhttp,fixed 模式下指定 xhttp UUID
---uuid-reality,fixed 模式下指定 reality UUID
---xhttp-port,xhttp 监听端口（默认 80）
---reality-port,reality 监听端口（默认 443）
-version,输出脚本版本
+| 参数                  | 说明                       |
+| ------------------- | ------------------------ |
+| `-i`, `--install`   | 安装并部署                    |
+| `-u`, `--uninstall` | 卸载并清理                    |
+| `-s`, `--status`    | 查看运行状态                   |
+| `-d`, `--domain`    | Cloudflare 域名（必填）        |
+| `-m`, `--mode`      | 身份模式：`random` / `fixed`  |
+| `--uuid-xhttp`      | fixed 模式下指定 xhttp UUID   |
+| `--uuid-reality`    | fixed 模式下指定 reality UUID |
+| `--xhttp-port`      | xhttp 监听端口（默认 80）        |
+| `--reality-port`    | reality 监听端口（默认 443）     |
+| `version`           | 输出脚本版本                   |
+
 
 # ☁️ Cloudflare 注意事项
 ***端口限制: Cloudflare 橙云代理 (CDN) 只支持回源到特定端口。***
