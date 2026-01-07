@@ -85,7 +85,7 @@ graph TD
 ```bash
 ./xhttp-reality.sh -i -d your.domain -m fixed
 ```
-*** 使用代码内默认的固定身份配置和通过CLI参数传入的配置参数生成XRAY身份配置。***
+** 使用代码内默认的固定身份配置和通过CLI参数传入的配置参数生成XRAY身份配置。**
 
 # 🧭 CLI 参数说明
 **参数,说明**
