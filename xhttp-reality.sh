@@ -326,14 +326,30 @@ EOJ
   PATH_ENCODED=$(printf '%s' "$XHTTP_PATH" | jq -sRr @uri)
 
   VLESS_LINK="vless://${UUID_XHTTP}@${YOUXUAN_DOMAIN}:443?encryption=none&security=tls&sni=${CF_DOMAIN}&type=xhttp&host=${CF_DOMAIN}&path=${PATH_ENCODED}&mode=auto&extra=${EXTRA_ENCODED}#xhttp-reality"
+  
+  SUB_BASE64=$(printf '%s' "$VLESS_LINK" | base64 -w 0)
+
   echo ""
-  echo " ✔ 客户端分享链接已生成："
+  echo "✔ 客户端配置已生成"
+  echo "══════════════════════════════════════"
   echo ""
-  echo "！！！服务器地址默认使用www.visa.com.hk，可自行修改为其他套CF的域名或优选IP！！！"
-  echo ""
+  echo "【方式一：单节点分享链接（整行复制）】"
+  echo "──────────────────────────────────────"
   echo "$VLESS_LINK" | tee "$XRAY_DIR/client-link.txt"
+  echo "──────────────────────────────────────"
   echo ""
-  echo "==============安装完成================="
+  echo "【方式二：Base64 订阅（推荐）】"
+  echo "──────────────────────────────────────"
+  echo "$SUB_BASE64"
+  echo "──────────────────────────────────────"
+  echo ""
+  echo "【提示】"
+  echo "- v2rayN / sing-box：使用 Base64 订阅"
+  echo "- 服务器地址默认使用www.visa.com.hk，可自行修改为其他套CF的域名或优选IP！"
+  echo ""
+  echo ""
+  echo "════════════════安装完成════════════════"
+  echo ""
 }
 
 # ================= 卸载 =================
